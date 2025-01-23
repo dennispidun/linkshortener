@@ -1,0 +1,13 @@
+spring:
+    application:
+        name: LinkShortener
+    datasource:
+        url: jdbc:postgresql://localhost:5432/linkshortener
+        username: user
+        password: s3cret
+    jpa:
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
