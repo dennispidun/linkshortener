@@ -1,0 +1,21 @@
+name: Build And Test
+
+permissions:
+    contents: read
+    pull-requests: read
+
+on:
+    push:
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Set up JDK
+              uses: actions/setup-java@v3
+              with:
+                  java-version: '21'
+                  distribution: 'temurin'
+            - name: Build and Test
+              run: ./gradlew clean test
