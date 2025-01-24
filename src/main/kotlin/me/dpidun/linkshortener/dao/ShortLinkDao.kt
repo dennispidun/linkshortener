@@ -32,8 +32,8 @@ class ShortLinkDao {
     @PrePersist
     @PreUpdate
     private fun generateShortHash() {
-        if (hash.isNullOrEmpty() && !name.isNullOrEmpty() && !redirectUrl.isNullOrEmpty()) {
-            hash = hash(name + redirectUrl)
+        if (hash.isNullOrEmpty() && !name.isNullOrEmpty() && !redirectUrl.isNullOrEmpty() && createdAt != null) {
+            hash = hash(name + redirectUrl + createdAt)
         }
     }
 
