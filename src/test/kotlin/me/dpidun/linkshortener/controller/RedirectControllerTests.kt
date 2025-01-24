@@ -1,6 +1,6 @@
 package me.dpidun.linkshortener.controller
 
-import me.dpidun.linkshortener.dao.ShortLink
+import me.dpidun.linkshortener.dao.ShortLinkDao
 import me.dpidun.linkshortener.repository.ShortLinkRepository
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -24,7 +24,7 @@ class RedirectControllerTest {
     @Test
     fun shouldRedirectToShortLink() {
         val hash = "abcdefghi"
-        val shortLink = ShortLink("some_name", "https://example.com", hash)
+        val shortLink = ShortLinkDao("some_name", "https://example.com", hash)
 
         Mockito.`when`(shortLinkRepository.findByHash(hash)).thenReturn(shortLink)
 

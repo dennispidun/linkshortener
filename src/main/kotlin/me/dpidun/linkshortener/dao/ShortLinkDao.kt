@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 
 @Entity
-class ShortLink {
+class ShortLinkDao {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null
