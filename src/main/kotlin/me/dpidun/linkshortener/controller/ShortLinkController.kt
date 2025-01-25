@@ -1,5 +1,6 @@
 package me.dpidun.linkshortener.controller
 
+import jakarta.validation.Valid
 import me.dpidun.linkshortener.dao.ShortLinkDao
 import me.dpidun.linkshortener.dto.CreateShortLinkDto
 import me.dpidun.linkshortener.repository.ShortLinkRepository
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController
 class ShortLinkController(private val shortLinkRepository: ShortLinkRepository) {
 
     @PostMapping
-    fun createShortLink(@RequestBody createShortLinkDto: CreateShortLinkDto): String? {
-        println(createShortLinkDto)
-
+    fun createShortLink(
+        @Valid @RequestBody createShortLinkDto: CreateShortLinkDto
+    ): String? {
         return shortLinkRepository.save(
             ShortLinkDao(
                 name = createShortLinkDto.name,
