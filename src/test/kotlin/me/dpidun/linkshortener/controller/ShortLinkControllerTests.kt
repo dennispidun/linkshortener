@@ -392,4 +392,40 @@ class ShortLinkControllerTests {
             verify(exactly = 0) { shortLinkRepository.save(any()) }
         }
     }
+
+    @Nested
+    @WebMvcTest
+    @AutoConfigureMockMvc
+    inner class DeleteShortLink(@Autowired val mockMvc: MockMvc) {
+
+        @MockkBean
+        private lateinit var shortLinkRepository: ShortLinkRepository
+
+        @Test
+        fun `should delete ShortLink by id`() {
+            val toBeDeleted = ShortLinkDao(1, "name", "https://example.com", "abcdefghi")
+            every { shortLinkRepository.findById(1) } returns Optional.of(toBeDeleted)
+
+            every { shortLinkRepository.delete(any()) } returns Unit
+
+            mockMvc.perform(
+                MockMvcRequestBuilders.delete("/shortlinks/1").contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.status().isOk)
+
+            verify {
+                shortLinkRepository.delete(toBeDeleted)
+            }
+        }
+
+        @Test
+        fun `should return NotFound if ShortLink is not available`() {
+            every { shortLinkRepository.findById(1) } returns Optional.empty()
+
+            mockMvc.perform(
+                MockMvcRequestBuilders.delete("/shortlinks/1").contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.status().isNotFound)
+
+            verify(exactly = 0) { shortLinkRepository.delete(any()) }
+        }
+    }
 }

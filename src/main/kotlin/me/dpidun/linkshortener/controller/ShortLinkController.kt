@@ -69,4 +69,20 @@ class ShortLinkController(private val shortLinkRepository: ShortLinkRepository) 
 
         return shortLinkRepository.save(shortLink)
     }
+
+
+    @DeleteMapping("/{id}")
+    fun deleteShortLink(
+        @PathVariable id: Long,
+    ) {
+        val shortLinkOptional = shortLinkRepository.findById(id)
+
+        if (!shortLinkOptional.isPresent) {
+            throw ShortLinkNotFoundException(id)
+        }
+
+        val shortLink = shortLinkOptional.get()
+
+        shortLinkRepository.delete(shortLink)
+    }
 }
