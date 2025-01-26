@@ -150,6 +150,85 @@ class ShortLinkControllerTests {
     @Nested
     @WebMvcTest
     @AutoConfigureMockMvc
+    inner class GetShortLinks(@Autowired val mockMvc: MockMvc) {
+
+        @MockkBean
+        private lateinit var shortLinkRepository: ShortLinkRepository
+
+        @Test
+        fun `should return two ShortLinks`() {
+            val redirectUrl1 = "https://github.com"
+            val redirectUrl2 = "https://example.com"
+            val hash1 = "abcdefghi"
+            val hash2 = "abcdefghi"
+            val name1 = "link1"
+            val name2 = "link2"
+
+            every { shortLinkRepository.findAll() } returns listOf(
+                ShortLinkDao(1, name1, redirectUrl1, hash1),
+                ShortLinkDao(2, name2, redirectUrl2, hash2)
+
+            )
+
+            mockMvc.perform(
+                MockMvcRequestBuilders.get("/shortlinks").contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks", Matchers.hasSize<Any>(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[0].id", Matchers.equalTo(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[0].name", Matchers.equalTo(name1)))
+                .andExpect(
+                    MockMvcResultMatchers.jsonPath(
+                        "$.shortLinks[0].redirectUrl",
+                        Matchers.equalTo(redirectUrl1)
+                    )
+                )
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[0].hash", Matchers.equalTo(hash1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[1].id", Matchers.equalTo(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[1].name", Matchers.equalTo(name2)))
+                .andExpect(
+                    MockMvcResultMatchers.jsonPath(
+                        "$.shortLinks[1].redirectUrl",
+                        Matchers.equalTo(redirectUrl2)
+                    )
+                )
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shortLinks[1].hash", Matchers.equalTo(hash2)))
+        }
+
+        @Test
+        fun `should return one ShortLink`() {
+            val redirectUrl = "https://github.com"
+            val hash = "abcdefghi"
+            val name = "link1"
+
+            every { shortLinkRepository.findById(1) } returns Optional.of(
+                ShortLinkDao(1, name, redirectUrl, hash)
+            )
+
+            mockMvc.perform(
+                MockMvcRequestBuilders.get("/shortlinks/1").contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.equalTo(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.equalTo(name)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl", Matchers.equalTo(redirectUrl)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hash", Matchers.equalTo(hash)))
+        }
+
+        @Test
+        fun `should return NotFound if ShortLink is not available`() {
+            every { shortLinkRepository.findById(1) } returns Optional.empty()
+
+            mockMvc.perform(
+                MockMvcRequestBuilders.get("/shortlinks/1").contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(MockMvcResultMatchers.status().isNotFound)
+        }
+    }
+
+    @Nested
+    @WebMvcTest
+    @AutoConfigureMockMvc
     inner class UpdateShortLink(@Autowired val mockMvc: MockMvc) {
 
         @MockkBean

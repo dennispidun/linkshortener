@@ -3,6 +3,9 @@ package me.dpidun.linkshortener.dto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import me.dpidun.linkshortener.dao.ShortLinkDao
+
+data class GetShortLinksDto(val shortLinks: Iterable<ShortLinkDao>)
 
 data class CreateShortLinkDto(
 

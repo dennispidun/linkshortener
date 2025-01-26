@@ -3,6 +3,7 @@ package me.dpidun.linkshortener.controller
 import jakarta.validation.Valid
 import me.dpidun.linkshortener.dao.ShortLinkDao
 import me.dpidun.linkshortener.dto.CreateShortLinkDto
+import me.dpidun.linkshortener.dto.GetShortLinksDto
 import me.dpidun.linkshortener.dto.UpdateShortLinkDto
 import me.dpidun.linkshortener.error.ShortLinkNotFoundException
 import me.dpidun.linkshortener.repository.ShortLinkRepository
@@ -25,6 +26,30 @@ class ShortLinkController(private val shortLinkRepository: ShortLinkRepository) 
             )
         )
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    fun getShortLinks(): GetShortLinksDto {
+        return GetShortLinksDto(
+            shortLinkRepository.findAll()
+        )
+    }
+
+    @GetMapping("/{id}")
+    fun getShortLink(
+        @PathVariable id: Long
+    ): ShortLinkDao {
+        val shortLinkOptional = shortLinkRepository.findById(id)
+
+        if (!shortLinkOptional.isPresent) {
+            throw ShortLinkNotFoundException(id)
+        }
+
+        val shortLink = shortLinkOptional.get()
+
+        return shortLink
+    }
+
 
     @PutMapping("/{id}")
     fun updateShortLink(
