@@ -52,4 +52,14 @@ class ShortLinkDaoRepositoryTest {
 
         assertEquals(8, savedShortLink.hash!!.length)
     }
+
+    @Test
+    fun `should generate different hashes for same content`() {
+        val shortLink1 = ShortLinkDao("Test Link", "https://example.com")
+        val shortLink2 = ShortLinkDao("Test Link", "https://example.com")
+        val savedShortLink1 = repository.save(shortLink1)
+        val savedShortLink2 = repository.save(shortLink2)
+
+        assertNotEquals(savedShortLink1.hash!!, savedShortLink2.hash!!)
+    }
 }

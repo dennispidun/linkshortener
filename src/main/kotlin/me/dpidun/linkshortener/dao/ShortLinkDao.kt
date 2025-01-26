@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class ShortLinkDao {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long? = null
+    var id: Long? = null
     var hash: String? = null
     var name: String? = null
     var redirectUrl: String? = null
@@ -29,11 +29,15 @@ class ShortLinkDao {
         this.hash = hash
     }
 
+    constructor(id: Long?, name: String?, redirectUrl: String?, hash: String?) : this(name, redirectUrl, hash) {
+        this.id = id
+    }
+
     @PrePersist
     @PreUpdate
     private fun generateShortHash() {
-        if (hash.isNullOrEmpty() && !name.isNullOrEmpty() && !redirectUrl.isNullOrEmpty()) {
-            hash = hash(name + redirectUrl)
+        if (hash.isNullOrEmpty() && !name.isNullOrEmpty() && !redirectUrl.isNullOrEmpty() && createdAt != null) {
+            hash = hash(name + redirectUrl + createdAt)
         }
     }
 
@@ -41,14 +45,10 @@ class ShortLinkDao {
     private fun hash(input: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(input.toByteArray())
-        return hashBytes
-            .joinToString("") { "%02x".format(it) }
-            .take(8)
+        return hashBytes.joinToString("") { "%02x".format(it) }.take(8)
     }
 
     override fun toString(): String {
-        return "ShortLink(id=$id, shortHash=$hash, name=$name, redirectUrl=$redirectUrl)"
+        return "ShortLinkDao(id=$id, hash=$hash, name=$name, redirectUrl=$redirectUrl, createdAt=$createdAt)"
     }
-
-
 }

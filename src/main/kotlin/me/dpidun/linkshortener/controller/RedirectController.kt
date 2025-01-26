@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView
 import java.net.URI
 
 @RestController
-@Tag(name = "Redirect", description = "Redirects to an URL of the provided shortLink hash provided within the path")
+@Tag(name = "Redirect", description = "Redirects to an URL of the provided shortLink hash")
 @RequestMapping("/")
 class RedirectController(private val shortLinkRepository: ShortLinkRepository) {
 

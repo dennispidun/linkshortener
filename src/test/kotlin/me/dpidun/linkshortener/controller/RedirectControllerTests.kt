@@ -1,13 +1,13 @@
 package me.dpidun.linkshortener.controller
 
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import me.dpidun.linkshortener.dao.ShortLinkDao
 import me.dpidun.linkshortener.repository.ShortLinkRepository
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -18,15 +18,15 @@ class RedirectControllerTest {
     @Autowired
     private val mockMvc: MockMvc? = null
 
-    @MockBean
+    @MockkBean
     private lateinit var shortLinkRepository: ShortLinkRepository
 
     @Test
-    fun shouldRedirectToShortLink() {
+    fun `should redirect to ShortLink`() {
         val hash = "abcdefghi"
         val shortLink = ShortLinkDao("some_name", "https://example.com", hash)
 
-        Mockito.`when`(shortLinkRepository.findByHash(hash)).thenReturn(shortLink)
+        every { shortLinkRepository.findByHash(hash) } returns shortLink
 
         mockMvc!!.perform(MockMvcRequestBuilders.get("/${hash}"))
             .andExpect(MockMvcResultMatchers.status().isFound())
@@ -34,9 +34,9 @@ class RedirectControllerTest {
     }
 
     @Test
-    fun shouldRespondWithNotFound() {
+    fun `should respond with 404 for not existing hash`() {
         val hash = "abcdefghi"
-        Mockito.`when`(shortLinkRepository.findByHash(hash)).thenReturn(null)
+        every { shortLinkRepository.findByHash(hash) } returns null
 
         mockMvc!!.perform(MockMvcRequestBuilders.get("/${hash}"))
             .andExpect(MockMvcResultMatchers.status().isNotFound())
