@@ -15,6 +15,21 @@ java {
     }
 }
 
+sourceSets {
+    create("e2eTest") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+
+val e2eTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+configurations["e2eTestImplementation"].extendsFrom(configurations.runtimeOnly.get())
+
+
 repositories {
     mavenCentral()
 }
@@ -42,6 +57,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
+
+    e2eTestImplementation("com.h2database:h2")
+    e2eTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    e2eTestImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    e2eTestImplementation("io.rest-assured:rest-assured:5.4.0")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -51,6 +72,30 @@ kotlin {
     }
 }
 
+
+val end2endTest = task<Test>("end2endTest") {
+    description = "Runs end-to-end tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["e2eTest"].output.classesDirs
+    classpath = sourceSets["e2eTest"].runtimeClasspath
+    shouldRunAfter("test")
+}
+
+
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.getByName<Test>("end2endTest") {
+    useJUnitPlatform()
+    systemProperty("spring.profiles.active", "e2e")
+}
+
+tasks.getByName<Test>("end2endTest") {
+    useJUnitPlatform()
+}
+
+tasks.check {
+    dependsOn(end2endTest)
 }
