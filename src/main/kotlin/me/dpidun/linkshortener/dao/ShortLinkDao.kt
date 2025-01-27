@@ -1,11 +1,13 @@
 package me.dpidun.linkshortener.dao
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import java.security.MessageDigest
 import java.time.LocalDateTime
 
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 class ShortLinkDao {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,5 +52,20 @@ class ShortLinkDao {
 
     override fun toString(): String {
         return "ShortLinkDao(id=$id, hash=$hash, name=$name, redirectUrl=$redirectUrl, createdAt=$createdAt)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ShortLinkDao
+
+        if (id != other.id) return false
+        if (hash != other.hash) return false
+        if (name != other.name) return false
+        if (redirectUrl != other.redirectUrl) return false
+        if (createdAt != other.createdAt) return false
+
+        return true
     }
 }
